@@ -34,17 +34,13 @@ func main() {
 		log.Fatalln(err)
 		os.Exit(-1)
 	}
-	log.Println(currentDir)
-	childDirs, err := tree(*directoryOnly, currentDir)
-
+	tree(*directoryOnly, currentDir, 0)
 	if err != nil {
 		log.Fatalln(err)
 	}
-
-	log.Println(childDirs)
 }
 
-func tree(d bool, dir string) (childDirs []string, err error) {
+func tree(d bool, dir string, deep int) (err error) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		return
@@ -55,11 +51,20 @@ func tree(d bool, dir string) (childDirs []string, err error) {
 			continue
 		}
 
+		tab := ""
+		for i := 0; i < deep; i++ {
+			tab = tab + "\t"
+		}
+
+		fmt.Printf(tab+"%s\n", file.Name())
+
 		if file.IsDir() {
 			child := dir + "/" + file.Name()
-			childDirs = append(childDirs, child)
+			err = tree(d, child, deep+1)
+			if err != nil {
+				return
+			}
 		}
-		fmt.Println(file.Name())
 	}
 	return
 }
