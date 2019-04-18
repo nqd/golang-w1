@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path"
 )
 
 func main() {
@@ -76,7 +77,7 @@ func tree(d bool, dir string, dept int, maxDepth int, out io.Writer) (err error)
 			if dept >= maxDepth {
 				continue
 			}
-			child := dir + "/" + file.Name()
+			child := path.Join(dir, "/", file.Name())
 			err = tree(d, child, dept+1, maxDepth, out)
 			if err != nil {
 				return
