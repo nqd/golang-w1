@@ -3,13 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 )
 
 func main() {
 	depth := flag.Int64("L", 100, "Max display depth of the directory tree.")
-	hasDirectory := flag.Bool("d", false, "List directories only.")
+	directoryOnly := flag.Bool("d", false, "List directories only.")
 	help := flag.Bool("h", false, "Prints usage informationn")
 	output := flag.String("o", "", "Send output to filename.")
 
@@ -21,7 +22,7 @@ func main() {
 
 	flag.Parse()
 
-	log.Println(depth, hasDirectory, help, output)
+	log.Println(depth, directoryOnly, help, output)
 
 	if *help {
 		flag.Usage()
@@ -34,4 +35,31 @@ func main() {
 		os.Exit(-1)
 	}
 	log.Println(currentDir)
+	childDirs, err := tree(*directoryOnly, currentDir)
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	log.Println(childDirs)
+}
+
+func tree(d bool, dir string) (childDirs []string, err error) {
+	files, err := ioutil.ReadDir(dir)
+	if err != nil {
+		return
+	}
+	for _, file := range files {
+		// ignore file when needed
+		if d && file.IsDir() == false {
+			continue
+		}
+
+		if file.IsDir() {
+			child := dir + "/" + file.Name()
+			childDirs = append(childDirs, child)
+		}
+		fmt.Println(file.Name())
+	}
+	return
 }
