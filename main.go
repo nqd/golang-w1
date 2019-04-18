@@ -3,13 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
 )
 
 func main() {
-	depth := flag.Int64("L", 100, "Max display depth of the directory tree.")
+	depth := flag.Int("L", 100, "Max display depth of the directory tree.")
 	directoryOnly := flag.Bool("d", false, "List directories only.")
 	help := flag.Bool("h", false, "Prints usage informationn")
 	output := flag.String("o", "", "Send output to filename.")
@@ -22,7 +23,19 @@ func main() {
 
 	flag.Parse()
 
-	log.Println(depth, directoryOnly, help, output)
+	var out *os.File
+
+	if *output == "" {
+		out = os.Stdout
+	} else {
+		var errCreate error
+		out, errCreate = os.Create(*output)
+		if errCreate != nil {
+			log.Fatalln(errCreate)
+			os.Exit(-1)
+		}
+		defer out.Close()
+	}
 
 	if *help {
 		flag.Usage()
@@ -34,13 +47,13 @@ func main() {
 		log.Fatalln(err)
 		os.Exit(-1)
 	}
-	tree(*directoryOnly, currentDir, 0)
+	tree(*directoryOnly, currentDir, 0, *depth, out)
 	if err != nil {
 		log.Fatalln(err)
 	}
 }
 
-func tree(d bool, dir string, deep int) (err error) {
+func tree(d bool, dir string, dept int, maxDepth int, out io.Writer) (err error) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		return
@@ -52,15 +65,19 @@ func tree(d bool, dir string, deep int) (err error) {
 		}
 
 		tab := ""
-		for i := 0; i < deep; i++ {
+		for i := 0; i < dept; i++ {
 			tab = tab + "\t"
 		}
 
-		fmt.Printf(tab+"%s\n", file.Name())
+		// fmt.Printf(tab+"%s\n", file.Name())
+		fmt.Fprintf(out, tab+"%s\n", file.Name())
 
 		if file.IsDir() {
+			if dept >= maxDepth {
+				continue
+			}
 			child := dir + "/" + file.Name()
-			err = tree(d, child, deep+1)
+			err = tree(d, child, dept+1, maxDepth, out)
 			if err != nil {
 				return
 			}
