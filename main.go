@@ -14,6 +14,8 @@ import (
 func main() {
 	var cfgAlias, cfgURL string
 	var runPort int
+	var rootList bool
+
 	shorten, err := shortener.NewShortener("./record.yaml")
 	if err != nil {
 		log.Fatalln(err)
@@ -40,8 +42,12 @@ You will be redirected to the original page.`,
 Configure create new redirect item.`,
 		Args: cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("Print: " + strings.Join(args, " ") + cfgAlias)
-			shorten.Add(cfgAlias, cfgURL)
+			err := shorten.Add(cfgAlias, cfgURL)
+			if err != nil {
+				log.Fatalln(err)
+				return
+			}
+			log.Println("done!")
 		},
 	}
 
@@ -50,8 +56,17 @@ Configure create new redirect item.`,
 
 	// cmdTimes.Flags().IntVarP(&echoTimes, "times", "t", 1, "times to echo the input")
 
-	var rootCmd = &cobra.Command{Use: "app"}
-	rootCmd.AddCommand(cmdRun, cmdConfigure)
-	rootCmd.Execute()
+	var rootCmd = &cobra.Command{
+		Use: "app",
+		Run: func(cmd *cobra.Command, args []string) {
+			if rootList {
+				shorten.List()
+			}
+		},
+	}
+	rootCmd.Flags().BoolVarP(&rootList, "list", "l", false, "url for the alias")
 
+	rootCmd.AddCommand(cmdRun, cmdConfigure)
+
+	rootCmd.Execute()
 }

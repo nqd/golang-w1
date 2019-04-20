@@ -1,6 +1,7 @@
 package shortener
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -70,6 +71,11 @@ func (st Shortener) Remove(s string) (err error) {
 	}
 
 	return
+}
+func (st Shortener) List() {
+	for _, short := range st.shorts {
+		fmt.Printf("Alias: %s, Origin: %s\n", short.Short, short.Full)
+	}
 }
 
 func (st Shortener) query(s string) (f string, ok bool) {
