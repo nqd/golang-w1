@@ -1,0 +1,4 @@
+- dog:
+  to: https://dog.do/abc
+- cat:
+  to: https://cat.ca/123
