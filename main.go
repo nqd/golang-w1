@@ -6,10 +6,12 @@ import (
 
 	"github.com/spf13/cobra"
 
-	_ "github.com/nqd/lab1/shortener"
+	"github.com/nqd/lab1/shortener"
 )
 
 func main() {
+	shortener.NewShortener("./record.yaml")
+
 	var echoTimes int
 
 	var cmdPrint = &cobra.Command{
@@ -53,4 +55,5 @@ a count and a string.`,
 	rootCmd.AddCommand(cmdPrint, cmdEcho)
 	cmdEcho.AddCommand(cmdTimes)
 	rootCmd.Execute()
+
 }
