@@ -1,4 +1,7 @@
-- dog:
-  to: https://dog.do/abc
-- cat:
-  to: https://cat.ca/123
+- short: cat
+  full: https://dog.do/abc
+  hit: 0
+
+- short: cat
+  full: https://cat.ca/123
+  hit: 1

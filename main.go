@@ -5,6 +5,8 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+
+	_ "github.com/nqd/lab1/shortener"
 )
 
 func main() {
