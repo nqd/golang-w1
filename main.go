@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	var cfgAlias, cfgURL string
+	var cfgAlias, cfgURL, cfgDelete string
 	var runPort int
 	var rootList bool
 
@@ -42,19 +42,30 @@ You will be redirected to the original page.`,
 Configure create new redirect item.`,
 		Args: cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			err := shorten.Add(cfgAlias, cfgURL)
-			if err != nil {
-				log.Fatalln(err)
+			if cfgAlias != "" && cfgURL != "" {
+				err := shorten.Add(cfgAlias, cfgURL)
+				if err != nil {
+					log.Fatalln(err)
+					return
+				}
+				log.Println("adding done!")
 				return
 			}
-			log.Println("done!")
+			if cfgDelete != "" {
+				err := shorten.Remove(cfgDelete)
+				if err != nil {
+					log.Fatalln(err)
+					return
+				}
+				log.Println("delete done!")
+				return
+			}
 		},
 	}
 
 	cmdConfigure.Flags().StringVarP(&cfgAlias, "alias", "a", "", "alias key")
 	cmdConfigure.Flags().StringVarP(&cfgURL, "url", "u", "", "url for the alias")
-
-	// cmdTimes.Flags().IntVarP(&echoTimes, "times", "t", 1, "times to echo the input")
+	cmdConfigure.Flags().StringVarP(&cfgDelete, "delete", "d", "", "delete an alias")
 
 	var rootCmd = &cobra.Command{
 		Use: "app",

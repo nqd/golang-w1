@@ -74,7 +74,7 @@ func (st Shortener) Remove(s string) (err error) {
 }
 func (st Shortener) List() {
 	for _, short := range st.shorts {
-		fmt.Printf("Alias: %s, Origin: %s\n", short.Short, short.Full)
+		fmt.Printf("%s --> %s\n", short.Short, short.Full)
 	}
 }
 
