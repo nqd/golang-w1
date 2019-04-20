@@ -4,3 +4,6 @@
 - short: cat
   full: https://cat.ca/123
   hit: 1
+- short: go
+  full: https://google.com
+  hit: 0

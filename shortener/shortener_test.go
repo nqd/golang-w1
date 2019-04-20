@@ -13,8 +13,8 @@ func TestInit(t *testing.T) {
 	log.Println(s)
 	assert.Nil(err)
 
-	s.add("hey", "google.com")
-	s.remove("hey")
+	s.Add("hey", "google.com")
+	s.Remove("hey")
 	// t.Log(shorten)
 	// t.Error(err)
 }

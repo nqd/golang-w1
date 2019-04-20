@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -10,50 +12,46 @@ import (
 )
 
 func main() {
-	shortener.NewShortener("./record.yaml")
+	var cfgAlias, cfgURL string
+	var runPort int
+	shorten, err := shortener.NewShortener("./record.yaml")
+	if err != nil {
+		log.Fatalln(err)
+		os.Exit(-1)
+	}
 
-	var echoTimes int
-
-	var cmdPrint = &cobra.Command{
-		Use:   "print [string to print]",
-		Short: "Print anything to the screen",
-		Long: `print is for printing anything back to the screen.
-For many years people have printed back to the screen.`,
-		Args: cobra.MinimumNArgs(1),
+	var cmdRun = &cobra.Command{
+		Use:   "run",
+		Short: "Start a HTTP server for shortening",
+		Long: `start a HTTP server for shortening.
+You will be redirected to the original page.`,
+		Args: cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println("Print: " + strings.Join(args, " "))
+			fmt.Println("Running at port", runPort)
 		},
 	}
+	cmdRun.Flags().IntVarP(&runPort, "port", "p", 3000, "HTTP server port")
 
-	var cmdEcho = &cobra.Command{
-		Use:   "echo [string to echo]",
-		Short: "Echo anything to the screen",
-		Long: `echo is for echoing anything back.
-Echo works a lot like print, except it has a child command.`,
-		Args: cobra.MinimumNArgs(1),
+	var cmdConfigure = &cobra.Command{
+		Use:   "configure",
+		Short: "append to the shorten list",
+		Long: `append to the shorten list.
+Configure create new redirect item.`,
+		Args: cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("Print: " + strings.Join(args, " "))
+			fmt.Println("Print: " + strings.Join(args, " ") + cfgAlias)
+			shorten.Add(cfgAlias, cfgURL)
 		},
 	}
 
-	var cmdTimes = &cobra.Command{
-		Use:   "times [string to echo]",
-		Short: "Echo anything to the screen more times",
-		Long: `echo things multiple times back to the user by providing
-a count and a string.`,
-		Args: cobra.MinimumNArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
-			for i := 0; i < echoTimes; i++ {
-				fmt.Println("Echo: " + strings.Join(args, " "))
-			}
-		},
-	}
+	cmdConfigure.Flags().StringVarP(&cfgAlias, "alias", "a", "", "alias key")
+	cmdConfigure.Flags().StringVarP(&cfgURL, "url", "u", "", "url for the alias")
 
-	cmdTimes.Flags().IntVarP(&echoTimes, "times", "t", 1, "times to echo the input")
+	// cmdTimes.Flags().IntVarP(&echoTimes, "times", "t", 1, "times to echo the input")
 
 	var rootCmd = &cobra.Command{Use: "app"}
-	rootCmd.AddCommand(cmdPrint, cmdEcho)
-	cmdEcho.AddCommand(cmdTimes)
+	rootCmd.AddCommand(cmdRun, cmdConfigure)
 	rootCmd.Execute()
 
 }

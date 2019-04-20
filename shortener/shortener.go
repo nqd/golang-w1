@@ -32,7 +32,7 @@ func NewShortener(file string) (shorten Shortener, err error) {
 	return
 }
 
-func (st Shortener) add(s string, f string) (err error) {
+func (st Shortener) Add(s string, f string) (err error) {
 	// not check duplicated keys
 	st.shorts = append(st.shorts, short{
 		Short: s,
@@ -47,11 +47,10 @@ func (st Shortener) add(s string, f string) (err error) {
 
 	return
 }
-func (st Shortener) remove(s string) (err error) {
+func (st Shortener) Remove(s string) (err error) {
 	// crazy searching
 	find := false
 	for i, short := range st.shorts {
-		log.Println(i)
 		if short.Short == s {
 			// crazy removing
 			if i < len(st.shorts)-1 {
@@ -70,6 +69,17 @@ func (st Shortener) remove(s string) (err error) {
 		}
 	}
 
+	return
+}
+
+func (st Shortener) query(s string) (f string, ok bool) {
+	for _, short := range st.shorts {
+		if short.Short == s {
+			f = short.Full
+			ok = true
+			return
+		}
+	}
 	return
 }
 
