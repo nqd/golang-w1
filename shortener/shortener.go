@@ -3,7 +3,6 @@ package shortener
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 
 	yaml "gopkg.in/yaml.v2"
@@ -29,7 +28,6 @@ func NewShortener(file string) (shorten Shortener, err error) {
 		return
 	}
 	shorten.file = file
-	log.Printf("%+v", shorten)
 	return
 }
 
@@ -94,7 +92,6 @@ func (st Shortener) update() (err error) {
 	if err != nil {
 		return
 	}
-	log.Println(string(out))
 
 	f, err := os.Create(st.file)
 	if err != nil {

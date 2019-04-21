@@ -28,6 +28,7 @@ func main() {
 You will be redirected to the original page.`,
 		Args: cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
+			log.Println("Shortener is listening at:", runPort)
 			if err := handler.Start(runPort, shorten); err != nil {
 				log.Fatalln(err)
 				os.Exit(-1)
