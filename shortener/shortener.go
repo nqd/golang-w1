@@ -78,7 +78,7 @@ func (st Shortener) List() {
 	}
 }
 
-func (st Shortener) query(s string) (f string, ok bool) {
+func (st Shortener) Query(s string) (f string, ok bool) {
 	for _, short := range st.shorts {
 		if short.Short == s {
 			f = short.Full
