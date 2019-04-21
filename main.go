@@ -1,13 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
-	"strings"
 
 	"github.com/spf13/cobra"
 
+	"github.com/nqd/lab1/handler"
 	"github.com/nqd/lab1/shortener"
 )
 
@@ -29,8 +28,10 @@ func main() {
 You will be redirected to the original page.`,
 		Args: cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("Print: " + strings.Join(args, " "))
-			fmt.Println("Running at port", runPort)
+			if err := handler.Start(runPort); err != nil {
+				log.Fatalln(err)
+				os.Exit(-1)
+			}
 		},
 	}
 	cmdRun.Flags().IntVarP(&runPort, "port", "p", 3000, "HTTP server port")
