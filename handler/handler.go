@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"unicode/utf8"
@@ -22,6 +23,8 @@ func Start(port int, db shortener.Shortener) (err error) {
 
 			return
 		}
+
+		log.Printf("From %s, to %s\n", alias, redURL)
 
 		http.Redirect(w, r, redURL, http.StatusMovedPermanently)
 		return
